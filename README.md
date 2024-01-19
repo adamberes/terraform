@@ -74,38 +74,36 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 
 ## [main.tf](./main.tf)
 This Terraform script orchestrates the creation of a VPC, EC2 instance, security groups, subnets, route tables, and DHCP options on AWS.
-## Resource: `aws_key_pair`
-- This defines an AWS SSH key pair named "deployer" with a specific public key.
-## EC2 Instance Configuration `aws_instance`
-- This resource block configures an EC2 instance with specific attributes such as AMI, instance type, key name, subnet, security groups, and more.
-## Virtual Private Cloud (VPC) Configuration `aws_vpc`
-- Defines a VPC with a specified CIDR block, DNS settings, and tags.
-## Security Groups for SSH and Webserver `aws_security_group.sg_ssh` and `aws_security_group.sg_web`
-- Configures security groups for SSH and webserver, allowing specified inbound and outbound traffic.
-## Public Subnet `aws_subnet`
-- Defines a public subnet within the VPC with a specific CIDR block and availability zone.
-## Route Table `aws_route_table` and Internet Gateway `aws_internet_gateway`
-- Creates a route table for the public subnet and associates it with an internet gateway for external connectivity.
-## Route Table Association `aws_route_table_association`, DHCP Options `aws_vpc_dhcp_options` and association `aws_vpc_dhcp_options_association` 
-- Associates the route table with the public subnet and configures DHCP options for the VPC.
+1. **Resource: `aws_key_pair`**
+   - This defines an AWS SSH key pair named "deployer" with a specific public key.
+2. **EC2 Instance Configuration `aws_instance`**
+   - This resource block configures an EC2 instance with specific attributes such as AMI, instance type, key name, subnet, security groups, and more.
+3. **Virtual Private Cloud (VPC) Configuration `aws_vpc`**
+   - Defines a VPC with a specified CIDR block, DNS settings, and tags.
+4. **Security Groups for SSH and Webserver `aws_security_group.sg_ssh` and `aws_security_group.sg_web`**
+   - Configures security groups for SSH and webserver, allowing specified inbound and outbound traffic.
+5. **Public Subnet `aws_subnet`**
+   - Defines a public subnet within the VPC with a specific CIDR block and availability zone.
+6. **Route Table `aws_route_table` and Internet Gateway `aws_internet_gateway`**
+   - Creates a route table for the public subnet and associates it with an internet gateway for external connectivity.
+7. **Route Table Association `aws_route_table_association`, DHCP Options `aws_vpc_dhcp_options` and association `aws_vpc_dhcp_options_association`** 
+   - Associates the route table with the public subnet and configures DHCP options for the VPC.
 
 ## [variables.tf](./variables.tf)
 
 The provided Terraform configuration defines several variables that are crucial for the setup of the infrastructure. Below is an explanation of each variable:
 
-## IP Addresses for Web Servers (`ips_web`)
-- **Type:** `map(string)` - Specifies that the variable is a map where the keys are strings and the values are strings.
-- **Default Values:** A mapping of indices ("0" to "4") to corresponding IP addresses for web servers.
+1. **IP Addresses for Web Servers (`ips_web`)**
+   - **Type:** `map(string)` - Specifies that the variable is a map where the keys are strings and the values are strings.
+   - **Default Values:** A mapping of indices ("0" to "4") to corresponding IP addresses for web servers.
 
-## Selected Amazon Machine Image (AMI) (`selected-ami`)
+2. **Selected Amazon Machine Image (AMI) (`selected-ami`)**
+   - **Description:** Provides a description for the variable.
+   - **Default Value:** Specifies the default Amazon Machine Image (AMI) to be used. In this case, it is set to "Ubuntu Server 22.04 LTS ubuntu".
 
-- **Description:** Provides a description for the variable.
-- **Default Value:** Specifies the default Amazon Machine Image (AMI) to be used. In this case, it is set to "Ubuntu Server 22.04 LTS ubuntu".
-
-## Mapping of AMI Names to AMI IDs (`map-ami-name-user`)
-
-- **Type:** `map(string)` - Specifies that the variable is a map where the keys are strings, and the values are strings.
-- **Default Values:** Maps human-readable AMI names to their corresponding AMI IDs for various operating systems.
+3. **Mapping of AMI Names to AMI IDs (`map-ami-name-user`)**
+   - **Type:** `map(string)` - Specifies that the variable is a map where the keys are strings, and the values are strings.
+   - **Default Values:** Maps human-readable AMI names to their corresponding AMI IDs for various operating systems.
 
 These variables provide flexibility and ease of configuration when deploying infrastructure using Terraform. Adjustments can be made based on specific requirements or changes in infrastructure needs.
 
@@ -113,17 +111,15 @@ These variables provide flexibility and ease of configuration when deploying inf
 
 The provided Terraform configuration defines two outputs, which are used to provide information or results after the infrastructure deployment. Below is an explanation of each output:
 
-## Public IPs of Web Servers (`public-ips-wb`)
+1. **Public IPs of Web Servers (`public-ips-wb`)**
+   - **Description:** This output provides the public IP addresses of the web servers.
+   - **Value:** Uses the `aws_instance.server.*.public_ip` expression to get a list of public IP addresses for all instances. The `join` function is then used to concatenate them into a comma-separated string.
+   - **Usage:** After running Terraform apply, you can retrieve the public IPs of the deployed instances by accessing the `public-ips-wb` output.
 
-- **Description:** This output provides the public IP addresses of the web servers.
-- **Value:** Uses the `aws_instance.server.*.public_ip` expression to get a list of public IP addresses for all instances. The `join` function is then used to concatenate them into a comma-separated string.
-- **Usage:** After running Terraform apply, you can retrieve the public IPs of the deployed instances by accessing the `public-ips-wb` output.
-
-## Selected AMI with Name Information (`selected-ami-with-name`)
-
-- **Description:** This output provides information about the selected AMI, including its name and ID.
-- **Value:** Uses the `format` function to create a formatted string that includes the AMI name specified in `var.selected-ami` and its corresponding AMI ID obtained from `var.map-ami-name-user`.
-- **Usage:** After running Terraform apply, you can retrieve information about the selected AMI by accessing the `selected-ami-with-name` output.
+2. **Selected AMI with Name Information (`selected-ami-with-name`)**
+   - **Description:** This output provides information about the selected AMI, including its name and ID.
+   - **Value:** Uses the `format` function to create a formatted string that includes the AMI name specified in `var.selected-ami` and its corresponding AMI ID obtained from `var.map-ami-name-user`.
+   - **Usage:** After running Terraform apply, you can retrieve information about the selected AMI by accessing the `selected-ami-with-name` output.
 
 These outputs are helpful for obtaining critical information or summaries after deploying infrastructure using Terraform. They provide a way to programmatically retrieve specific details about the deployed resources.
 
