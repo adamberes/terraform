@@ -12,7 +12,6 @@ In this configuration, we will describe the possibility of creating more than on
 **Install aws cli (Command Line Interface)**
 Install from the folowing Link:
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-**Install Terraform**
  - **AWS Configuration File (`~/.aws/config`):**
   - The region used for executing Terraform commands is typically taken from the AWS configuration file (`~/.aws/config`). The region specified in the Terraform provider block (`us-east-1`) is a fallback in case it's not specified in the AWS configuration file.
 
@@ -20,17 +19,45 @@ https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
   - AWS credentials (access key and secret key) used by Terraform are stored in the AWS credentials file (`~/.aws/credentials`).
   - These credentials can be configured using the `aws configure` command, which interactively prompts you to enter your AWS access key, secret key, default region, and output format.
 
-- Creating AWS User+
+- **Creating AWS User**
 Log in to the `AWS Management Console`, navigate to `IAM`, and create a new user. Generate an access key for programmatic access; detailed steps are available in the accompanying video. Describing the `AWS Management Console` here is omitted as it is subject to continuous evolution and change
 
-- Create a ssh key pair (ed25519) with pasphrase
+**Install Terraform**
+Install from the folowing Link and follow the instruction
+https://developer.hashicorp.com/terraform/install
+
+Here is a Brief description of each Terraform command:
+
+1. **`terraform init`**
+   - **Purpose:** Initializes a Terraform configuration in the current directory.
+   - **Usage:** Executed once per Terraform project to set up the working directory, download providers, and initialize the backend.
+
+2. **`terraform validate`**
+   - **Purpose:** Validates the Terraform files in the current directory for syntax and other errors.
+   - **Usage:** Checks for configuration file syntax errors without creating any infrastructure.
+
+3. **`terraform plan`**
+   - **Purpose:** Creates an execution plan showing what actions Terraform will take to apply the current configuration.
+   - **Usage:** Evaluates the current state of the infrastructure and compares it to the desired state, providing a preview of changes before they are applied.
+
+4. **`terraform apply`**
+   - **Purpose:** Applies the changes specified in the Terraform configuration, creating or modifying infrastructure.
+   - **Usage:** Executes the planned changes as per the `terraform plan` output. It prompts for confirmation before applying changes.
+
+5. **`terraform destroy`**
+   - **Purpose:** Destroys all the resources created by the Terraform configuration in the current directory.
+   - **Usage:** Safely removes infrastructure based on the defined Terraform configuration. It prompts for confirmation before initiating destruction.
+
+These commands are fundamental to the Terraform workflow. `init` sets up the environment, `validate` checks for syntax errors, `plan` previews changes, `apply` executes changes, and `destroy` removes resources. It's essential to use them in the correct order and understand their implications on your infrastructure.
+
+Finaly create a ssh key pair (ed25519) with pasphrase
 ```hcl
 ssh-keygen -t ed25519 -C "your_email@example.com"
 ```
 
 
 
-## main.tf
+## [provider.tf](./provider.tf)
 
 1. **Terraform Block:**
    - The `terraform` blocks in Terraform configuration files declare the required Terraform version and provider dependencies.
@@ -45,8 +72,24 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
    - The `provider` blocks define the configuration for specific providers. In this case, it's the AWS provider.
    - The `region = "us-east-1"` specifies the AWS region where the resources will be provisioned. EC2 instances, for example, will be launched in the "us-east-1" region.
 
+## [main.tf](./main.tf)
+This Terraform script orchestrates the creation of a VPC, EC2 instance, security groups, subnets, route tables, and DHCP options on AWS.
+## Resource: `aws_key_pair`
+- This defines an AWS SSH key pair named "deployer" with a specific public key.
+## EC2 Instance Configuration `aws_instance`
+- This resource block configures an EC2 instance with specific attributes such as AMI, instance type, key name, subnet, security groups, and more.
+## Virtual Private Cloud (VPC) Configuration `aws_vpc`
+- Defines a VPC with a specified CIDR block, DNS settings, and tags.
+## Security Groups for SSH and Webserver `aws_security_group.sg_ssh` and `aws_security_group.sg_web`
+- Configures security groups for SSH and webserver, allowing specified inbound and outbound traffic.
+## Public Subnet `aws_subnet`
+- Defines a public subnet within the VPC with a specific CIDR block and availability zone.
+## Route Table `aws_route_table` and Internet Gateway `aws_internet_gateway`
+- Creates a route table for the public subnet and associates it with an internet gateway for external connectivity.
+## Route Table Association `aws_route_table_association`, DHCP Options `aws_vpc_dhcp_options` and association `aws_vpc_dhcp_options_association` 
+- Associates the route table with the public subnet and configures DHCP options for the VPC.
 
-## variables.tf
+## [variables.tf](./variables.tf)
 
 The provided Terraform configuration defines several variables that are crucial for the setup of the infrastructure. Below is an explanation of each variable:
 
@@ -66,7 +109,8 @@ The provided Terraform configuration defines several variables that are crucial 
 
 These variables provide flexibility and ease of configuration when deploying infrastructure using Terraform. Adjustments can be made based on specific requirements or changes in infrastructure needs.
 
-##output.tf
+## [output.tf](./output.tf)
+
 The provided Terraform configuration defines two outputs, which are used to provide information or results after the infrastructure deployment. Below is an explanation of each output:
 
 ## Public IPs of Web Servers (`public-ips-wb`)
