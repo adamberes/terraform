@@ -2,6 +2,8 @@
 
 In this configuration, we will describe the possibility of creating more than one EC2 instance in a subnet.
 ## Introdution To Terraform
+The following resources will be used here:
+- Amazon EC2 Instance
 - VPC (Virtual Private Cloud)
 - Public subnet and private subnet
 - Internet Gateway
