@@ -62,10 +62,8 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 ## [provider.tf](./provider.tf)
 
 1. **Terraform Block:**
-   - The `terraform` blocks in Terraform configuration files declare the required Terraform version and provider dependencies.
 
 2. **Required Providers:**
-   - The `required_providers` block specifies the required providers for the configuration. In this case, it's AWS (`hashicorp/aws`) with a version constraint of at least 5.31.
 
 3. **Terraform Version Constraint:**
    - The `required_version` specifies the minimum Terraform version required to apply this configuration. Here, it's set to at least version 1.6.0.
@@ -82,7 +80,6 @@ This Terraform script orchestrates the creation of a VPC, EC2 instance, security
    - This resource block configures an EC2 instance with specific attributes such as AMI, instance type, key name, subnet, security groups, and more.
 3. **Virtual Private Cloud (VPC) Configuration `aws_vpc`**
    - Defines a VPC with a specified CIDR block, DNS settings, and tags.
-4. **Security Groups for SSH and Webserver `aws_security_group.sg_ssh` and `aws_security_group.sg_web`**
    - Configures security groups for SSH and webserver, allowing specified inbound and outbound traffic.
 5. **Public Subnet `aws_subnet`**
    - Defines a public subnet within the VPC with a specific CIDR block and availability zone.
@@ -140,7 +137,7 @@ selected-ami-with-name = "ami-by-name: Ubuntu Server 22.04 LTS ubuntu; ami-id: a
 To SSH into the server:
 
 ```hcl
-ssh -i timbuktu.ppk ubuntu@52.90.45.63 -v
+ssh -i timbuktu ubuntu@52.90.45.63 -v
 ```
 In the browser, under http://52.90.45.63, something similar is visible:
 
