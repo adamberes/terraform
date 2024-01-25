@@ -1,7 +1,7 @@
 # Define SSH key pair for our instances
 resource "aws_key_pair" "deployer" {
   key_name   = "timbuktu"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILNSUT8IoevPcd0NKImrG6sXteeq9jIW0I2EwbDMdVs9 cloudshell-user@ip-10-136-39-92.ec2.internal"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSZOv9T4dJp/95+HeW+g7NTyC1BftTCtw76m0O0nliQ info@adamberes.de"
 }
 
 # Configuration details for the EC2 instance
