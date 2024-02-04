@@ -146,3 +146,8 @@ Private Ip: ip-10-0-1-101
 Creation Time: Thu Jan 18 19:37:47 UTC 2024
 ```
 
+The folowing code generating a relationship between the used resources, using [Graphviz](https://graphviz.org/).
+```hcl
+terraform graph -type=plan | dot -Tpng >graph.png
+```
+![Relations between the Resources](graph.png)  
