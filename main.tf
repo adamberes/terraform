@@ -1,7 +1,7 @@
 # Define SSH key pair for our instances
 resource "aws_key_pair" "deployer" {
   key_name   = "timbuktu"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSZOv9T4dJp/95+HeW+g7NTyC1BftTCtw76m0O0nliQ info@adamberes.de"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINs+fDbU0hAdX2yPLs2dsi5BhcvX7n7bEH+o/+vOMQTb info@adamberes.de"
 }
 
 # Configuration details for the EC2 instance
@@ -20,7 +20,7 @@ resource "aws_instance" "server" {
   associate_public_ip_address = true
   source_dest_check           = false
   user_data                   = file("userdata.sh")
-  count                       = 1
+  count                       = 5
   private_ip                  = lookup(var.ips_web, count.index)
 
   tags = {
