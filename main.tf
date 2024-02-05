@@ -20,11 +20,12 @@ resource "aws_instance" "server" {
   associate_public_ip_address = true
   source_dest_check           = false
   user_data                   = file("userdata.sh")
-  count                       = 5
+  count                       = 1
   private_ip                  = lookup(var.ips_web, count.index)
 
   tags = {
     Name = "webserver"
+    TimeCreation = timestamp()
   }
 }
 
@@ -36,6 +37,7 @@ resource "aws_vpc" "vpc" {
 
   tags = {
     Name = "vpc"
+    TimeCreation = timestamp()
   }
 }
 
@@ -59,6 +61,7 @@ resource "aws_security_group" "sg_ssh" {
   }
   tags = {
     Name = "Security Group SSH"
+    TimeCreation = timestamp()
   }
 }
 
@@ -82,6 +85,7 @@ resource "aws_security_group" "sg_web" {
   }
   tags = {
     Name = "Security Group Webserver"
+    TimeCreation = timestamp()
   }
 }
 
@@ -93,6 +97,7 @@ resource "aws_subnet" "public-subnet" {
 
   tags = {
     Name = "Public Subnet"
+    TimeCreation = timestamp()
   }
 }
 
@@ -107,6 +112,7 @@ resource "aws_route_table" "web-public-route-table" {
 
   tags = {
     Name = "Public Subnet Route Table"
+    TimeCreation = timestamp()
   }
 }
 
@@ -116,6 +122,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 
   tags = {
     Name = "VPC Internet Gateway"
+    TimeCreation = timestamp()
   }
 }
 
@@ -134,8 +141,10 @@ resource "aws_vpc_dhcp_options_association" "dhcp" {
 # Configuration details for DHCP options
 resource "aws_vpc_dhcp_options" "dhcp" {
   domain_name_servers = ["AmazonProvidedDNS"]
+  
   tags = {
     "Name" = "dhcp"
+    TimeCreation = timestamp()
   }
 }
 
