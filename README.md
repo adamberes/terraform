@@ -1,6 +1,7 @@
 # Create AWS Infrastructure with Terraform VPC Public/Private Subnets Internet-gateway Security-groups EC2-Instances 
 
 In this configuration, we will describe the possibility of creating more than one EC2 instance in a subnet.
+[YouTube](https://www.youtube.com/watch?v=dlsGXc1Sewk&t=707s)
 ## Introdution To Terraform
 The following resources will be used here:
 - Amazon EC2 Instance
@@ -147,6 +148,7 @@ Creation Time: Thu Jan 18 19:37:47 UTC 2024
 ```
 
 The folowing code generating a relationship between the used resources, using [Graphviz](https://graphviz.org/).
+
 ```hcl
 terraform graph -type=plan | dot -Tpng >graph.png
 ```
