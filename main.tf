@@ -11,8 +11,7 @@ resource "aws_instance" "server" {
   key_name      = aws_key_pair.deployer.id
   subnet_id     = aws_subnet.public-subnet.id
   vpc_security_group_ids = [
-    aws_security_group.sg_ssh.id,
-    aws_security_group.sg_web.id
+    aws_security_group.webwerver.id,
   ]
   root_block_device {
     volume_size = 20
@@ -24,67 +23,51 @@ resource "aws_instance" "server" {
   private_ip                  = lookup(var.ips_web, count.index)
 
   tags = {
-    Name = "webserver"
+    Name         = "webserver"
     TimeCreation = timestamp()
   }
 }
 
- # Configuration details for the Virtual Private Cloud (VPC)...
+# Configuration details for the Virtual Private Cloud (VPC)...
 resource "aws_vpc" "vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = "vpc"
+    Name         = "vpc"
     TimeCreation = timestamp()
   }
 }
-
+locals {
+  inbound_ports  = [22, 80, 443]
+  outbound_ports = [0, 80, 443]
+}
 # Configuration details for the SSH security group
-resource "aws_security_group" "sg_ssh" {
-  name        = "vpc_sg_ssh"
+resource "aws_security_group" "webwerver" {
+  name        = "webserver-sg"
   description = "Allow SSH access"
   vpc_id      = aws_vpc.vpc.id
-  ingress {
-    cidr_blocks = ["0.0.0.0/0"]
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
+  dynamic "ingress" {
+    for_each = local.inbound_ports
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
-
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-  }
-  tags = {
-    Name = "Security Group SSH"
-    TimeCreation = timestamp()
-  }
-}
-
-# Configuration details for the webserver security group
-resource "aws_security_group" "sg_web" {
-  name        = "vpc_sg_web"
-  description = "Allow Webserver access"
-  vpc_id      = aws_vpc.vpc.id
-  ingress {
-    cidr_blocks = ["0.0.0.0/0"]
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-  }
-
-  egress {
-    cidr_blocks = ["0.0.0.0/0"]
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
+  dynamic "egress" {
+    for_each = local.outbound_ports
+    content {
+      from_port   = egress.value
+      to_port     = egress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
   tags = {
-    Name = "Security Group Webserver"
+    Name         = "Security Groups"
     TimeCreation = timestamp()
   }
 }
@@ -96,7 +79,7 @@ resource "aws_subnet" "public-subnet" {
   availability_zone = "us-east-1b"
 
   tags = {
-    Name = "Public Subnet"
+    Name         = "Public Subnet"
     TimeCreation = timestamp()
   }
 }
@@ -111,7 +94,7 @@ resource "aws_route_table" "web-public-route-table" {
   }
 
   tags = {
-    Name = "Public Subnet Route Table"
+    Name         = "Public Subnet Route Table"
     TimeCreation = timestamp()
   }
 }
@@ -121,7 +104,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "VPC Internet Gateway"
+    Name         = "VPC Internet Gateway"
     TimeCreation = timestamp()
   }
 }
@@ -132,7 +115,7 @@ resource "aws_route_table_association" "web-public-aws_route_table_association" 
   route_table_id = aws_route_table.web-public-route-table.id
 }
 
- # Configuration details for DHCP options association
+# Configuration details for DHCP options association
 resource "aws_vpc_dhcp_options_association" "dhcp" {
   vpc_id          = aws_vpc.vpc.id
   dhcp_options_id = aws_vpc_dhcp_options.dhcp.id
@@ -141,9 +124,9 @@ resource "aws_vpc_dhcp_options_association" "dhcp" {
 # Configuration details for DHCP options
 resource "aws_vpc_dhcp_options" "dhcp" {
   domain_name_servers = ["AmazonProvidedDNS"]
-  
+
   tags = {
-    "Name" = "dhcp"
+    "Name"       = "dhcp"
     TimeCreation = timestamp()
   }
 }
